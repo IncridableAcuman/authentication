@@ -12,6 +12,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        show-sql: true
 
   redis:
     host: ${REDIS_HOST}
