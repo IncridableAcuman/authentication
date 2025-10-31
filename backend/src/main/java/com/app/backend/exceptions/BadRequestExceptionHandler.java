@@ -1,4 +1,7 @@
 package com.app.backend.exceptions;
 
-public class BadRequestExceptionHandler {
+public class BadRequestExceptionHandler extends RuntimeException{
+    public BadRequestExceptionHandler(String message){
+        super(message);
+    }
 }
