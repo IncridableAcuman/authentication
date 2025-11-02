@@ -14,17 +14,17 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         show-sql: true
 
-    mail:
-      host: ${MAIL_HOST}
-      port: ${MAIL_PORT}
-      username: ${MAIL_USER}
-      password: ${MAIL_PASSWORD}
-      properties:
-        mail:
-          smtp:
-            auth: true
-            starttls:
-              enable: true
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USER}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
   redis:
     host: ${REDIS_HOST}

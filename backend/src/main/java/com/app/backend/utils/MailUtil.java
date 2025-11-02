@@ -1,14 +1,14 @@
 package com.app.backend.utils;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
 public class MailUtil {
-    private final JavaMailSender sender;
+    @Autowired
+    public  JavaMailSender sender;
 
     public void sendMail(String to,String subject,String text){
         SimpleMailMessage message=new SimpleMailMessage();
