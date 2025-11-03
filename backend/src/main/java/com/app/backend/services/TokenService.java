@@ -20,4 +20,14 @@ public class TokenService {
         token.setExpiryDate(LocalDateTime.now().plusDays(7));
          tokenRepository.save(token);
     }
+    public void authToken(String refreshToken,User user){
+        tokenRepository.findByUser(user).ifPresentOrElse(token -> {
+            token.setUser(user);
+            token.setRefreshToken(refreshToken);
+            token.setExpiryDate(LocalDateTime.now().plusDays(7));
+            tokenRepository.save(token);
+        },
+                ()->create(user,refreshToken)
+        );
+    }
 }

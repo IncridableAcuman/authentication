@@ -30,4 +30,9 @@ public class UserService {
     public User findUser(String email){
         return userRepository.findByEmail(email).orElseThrow(()->new NotFoundExceptionHandler("User not found"));
     }
+    public void matchesPasswords(String rawPassword,String encodedPassword){
+        if(!passwordEncoder.matches(rawPassword,encodedPassword)){
+            throw new BadRequestExceptionHandler("Password does not matches!");
+        }
+    }
 }

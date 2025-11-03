@@ -1,5 +1,6 @@
 package com.app.backend.services;
 
+import com.app.backend.dto.AuthRequest;
 import com.app.backend.dto.AuthResponse;
 import com.app.backend.dto.RegisterRequest;
 import com.app.backend.entities.User;
@@ -44,6 +45,17 @@ public class AuthService {
         return authResponse(user,accessToken);
     }
 
+    @Transactional
+    public AuthResponse login(AuthRequest request,HttpServletResponse response){
+        User user=userService.findUser(request.getEmail());
+        userService.matchesPasswords(request.getPassword(), user.getPassword());
+        String accessToken=tokenUtil.generateAccessToken(user);
+        String refreshToken=tokenUtil.generateRefreshToken(user);
+        cacheService.saveToken(accessToken, user.getUsername());
+        tokenService.authToken(refreshToken,user);
+        cookieUtil.addCookie(refreshToken,response);
+        return authResponse(user,accessToken);
+    }
 
 
 }

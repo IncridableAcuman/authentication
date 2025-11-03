@@ -1,5 +1,6 @@
 package com.app.backend.controllers;
 
+import com.app.backend.dto.AuthRequest;
 import com.app.backend.dto.AuthResponse;
 import com.app.backend.dto.RegisterRequest;
 import com.app.backend.services.AuthService;
@@ -23,5 +24,9 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request, HttpServletResponse response){
         return ResponseEntity.ok(service.register(request,response));
+    }
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@Valid @RequestBody AuthRequest request, HttpServletResponse response){
+        return ResponseEntity.ok(service.login(request,response));
     }
 }
