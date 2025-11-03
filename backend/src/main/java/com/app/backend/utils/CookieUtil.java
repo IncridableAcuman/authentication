@@ -13,7 +13,7 @@ public class CookieUtil {
         Cookie cookie=new Cookie("refreshToken",refreshToken);
         cookie.setValue(refreshToken);
         cookie.setHttpOnly(true);
-        cookie.setPath("/**");
+        cookie.setPath("/");
         cookie.setSecure(false);
         cookie.setMaxAge(refreshTime);
         cookie.setAttribute("SameSite","Lax");
@@ -23,7 +23,7 @@ public class CookieUtil {
         Cookie cookie=new Cookie("refreshToken",null);
         cookie.setValue(null);
         cookie.setHttpOnly(true);
-        cookie.setPath("/**");
+        cookie.setPath("/");
         cookie.setSecure(false);
         cookie.setMaxAge(refreshTime);
         cookie.setAttribute("SameSite","Lax");
