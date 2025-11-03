@@ -4,6 +4,7 @@ import com.app.backend.dto.AuthRequest;
 import com.app.backend.dto.AuthResponse;
 import com.app.backend.dto.RegisterRequest;
 import com.app.backend.entities.User;
+import com.app.backend.exceptions.BadRequestExceptionHandler;
 import com.app.backend.exceptions.UnAuthorizeExceptionHandler;
 import com.app.backend.utils.CookieUtil;
 import com.app.backend.utils.MailUtil;
@@ -57,8 +58,8 @@ public class AuthService {
 
     @Transactional
     public AuthResponse refresh(String refreshToken,HttpServletResponse response){
-        if(refreshToken==null || !refreshToken.startsWith("Bearer ")){
-            throw new UnAuthorizeExceptionHandler("Unauthorized");
+        if(!tokenUtil.validateToken(refreshToken)){
+            throw new BadRequestExceptionHandler("Invalid token");
         }
         String username=tokenUtil.extractSubject(refreshToken);
         User user=userService.findSubject(username);
@@ -69,4 +70,11 @@ public class AuthService {
         return authResponse(user,newAccessToken);
     }
 
+    @Transactional
+    public void logout(String refreshToken,HttpServletResponse response){
+        String username=tokenUtil.extractSubject(refreshToken);
+        User user=userService.findSubject(username);
+
+        cookieUtil.clearCookie(response);
+    }
 }
