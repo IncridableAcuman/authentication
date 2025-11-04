@@ -1,16 +1,15 @@
 package com.app.backend.services;
 
-import com.app.backend.dto.AuthRequest;
-import com.app.backend.dto.AuthResponse;
-import com.app.backend.dto.RegisterRequest;
+import com.app.backend.dto.*;
 import com.app.backend.entities.User;
 import com.app.backend.exceptions.BadRequestExceptionHandler;
-import com.app.backend.exceptions.UnAuthorizeExceptionHandler;
 import com.app.backend.utils.CookieUtil;
 import com.app.backend.utils.MailUtil;
 import com.app.backend.utils.TokenUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +62,7 @@ public class AuthService {
         }
         String username=tokenUtil.extractSubject(refreshToken);
         User user=userService.findSubject(username);
+        tokenService.deleteToken(refreshToken);
         String newAccessToken=tokenUtil.generateAccessToken(user);
         String newRefreshToken=tokenUtil.generateRefreshToken(user);
         tokenService.authToken(newRefreshToken,user);
@@ -73,8 +73,31 @@ public class AuthService {
     @Transactional
     public void logout(String refreshToken,HttpServletResponse response){
         String username=tokenUtil.extractSubject(refreshToken);
-        User user=userService.findSubject(username);
-
+        userService.findSubject(username);
+        tokenService.deleteToken(refreshToken);
         cookieUtil.clearCookie(response);
+    }
+    @Transactional
+    public String forgotPassword(ForgotPasswordRequest request){
+        User user=userService.findUser(request.getEmail());
+        String token=tokenUtil.generateAccessToken(user);
+        String url="http://localhost:5173/reset-password?token="+token;
+        mailUtil.sendMail(user.getEmail(),"Reset Password",url);
+        return "Reset password link sent to email";
+    }
+    @Transactional
+    public String resetPassword(ResetPasswordRequest request){
+        if (!tokenUtil.validateToken(request.getToken())){
+            throw new BadRequestExceptionHandler("Invalid token");
+        }
+        String subject=tokenUtil.extractSubject(request.getToken());
+        User user=userService.findSubject(subject);
+        userService.updatePassword(request.getPassword(),user);
+        return "Password updated successfully";
+    }
+    public CurrentUser getCurrentUser(){
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        User user=(User) authentication.getPrincipal();
+        return new CurrentUser(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
     }
 }

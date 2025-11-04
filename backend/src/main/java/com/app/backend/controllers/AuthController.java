@@ -1,8 +1,6 @@
 package com.app.backend.controllers;
 
-import com.app.backend.dto.AuthRequest;
-import com.app.backend.dto.AuthResponse;
-import com.app.backend.dto.RegisterRequest;
+import com.app.backend.dto.*;
 import com.app.backend.services.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -29,5 +27,22 @@ public class AuthController {
     @GetMapping("/refresh")
     public ResponseEntity<AuthResponse> refresh(@CookieValue(value = "refreshToken") String refreshToken,HttpServletResponse response){
         return ResponseEntity.ok(service.refresh(refreshToken,response));
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@CookieValue(value = "refreshToken") String refreshToken,HttpServletResponse response){
+        service.logout(refreshToken,response);
+        return ResponseEntity.ok("User logged");
+    }
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request){
+        return ResponseEntity.ok(service.forgotPassword(request));
+    }
+    @PutMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordRequest request){
+        return ResponseEntity.ok(service.resetPassword(request));
+    }
+    @GetMapping("/me")
+    public ResponseEntity<CurrentUser> getCurrentUser(){
+        return ResponseEntity.ok(service.getCurrentUser());
     }
 }

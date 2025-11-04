@@ -38,4 +38,8 @@ public class UserService {
             throw new BadRequestExceptionHandler("Password does not matches!");
         }
     }
+    public void updatePassword(String password,User user){
+        user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
+    }
 }

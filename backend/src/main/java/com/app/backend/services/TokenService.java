@@ -2,6 +2,7 @@ package com.app.backend.services;
 
 import com.app.backend.entities.Token;
 import com.app.backend.entities.User;
+import com.app.backend.exceptions.NotFoundExceptionHandler;
 import com.app.backend.repositories.TokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,5 +31,11 @@ public class TokenService {
                 ()->create(user,refreshToken)
         );
     }
-    public void deleteToken()
+    public Token findByRefreshToken(String refreshToken){
+        return tokenRepository.findByRefreshToken(refreshToken).orElseThrow(()->new NotFoundExceptionHandler("Token not found"));
+    }
+    public void deleteToken(String refreshToken){
+        Token token=findByRefreshToken(refreshToken);
+        tokenRepository.delete(token);
+    }
 }
