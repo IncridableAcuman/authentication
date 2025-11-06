@@ -25,13 +25,13 @@ public class AuthController {
         return ResponseEntity.ok(service.login(request,response));
     }
     @GetMapping("/refresh")
-    public ResponseEntity<AuthResponse> refresh(@CookieValue(value = "refreshToken") String refreshToken,HttpServletResponse response){
+    public ResponseEntity<AuthResponse> refresh(@CookieValue(value = "refreshToken",required = false) String refreshToken,HttpServletResponse response){
         return ResponseEntity.ok(service.refresh(refreshToken,response));
     }
     @PostMapping("/logout")
-    public ResponseEntity<String> logout(@CookieValue(value = "refreshToken") String refreshToken,HttpServletResponse response){
+    public ResponseEntity<String> logout(@CookieValue(value = "refreshToken",required = false) String refreshToken,HttpServletResponse response){
         service.logout(refreshToken,response);
-        return ResponseEntity.ok("User logged");
+        return ResponseEntity.ok("User successfully logged out");
     }
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request){
