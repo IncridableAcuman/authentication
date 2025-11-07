@@ -9,6 +9,7 @@ import com.app.backend.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -16,6 +17,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public User create(RegisterRequest request){
         if (userRepository.findByEmail(request.getEmail()).isPresent()){
             throw new BadRequestExceptionHandler("User already exist.");
@@ -27,9 +29,11 @@ public class UserService {
         user.setRole(Role.USER);
         return userRepository.save(user);
     }
+    @Transactional
     public User findUser(String email){
         return userRepository.findByEmail(email).orElseThrow(()->new NotFoundExceptionHandler("User not found"));
     }
+    @Transactional
     public User findSubject(String username){
         return userRepository.findByUsername(username).orElseThrow(()->new NotFoundExceptionHandler("User not found"));
     }
@@ -37,9 +41,16 @@ public class UserService {
         if(!passwordEncoder.matches(rawPassword,encodedPassword)){
             throw new BadRequestExceptionHandler("Password does not matches!");
         }
-    }
+    }@Transactional
     public void updatePassword(String password,User user){
         user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
+    }
+    public void updateRole(Long id){
+        User user=userRepository.findById(id).orElseThrow(()->new NotFoundExceptionHandler("User not found"));
+        if(user.getRole().equals(Role.USER)){
+            user.setRole(Role.ADMIN);
+        }
         userRepository.save(user);
     }
 }

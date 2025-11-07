@@ -26,6 +26,10 @@ public class SecurityConfig {
         http
                 .cors(cors->cors.configurationSource(config.configurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exception->exception
+                        .authenticationEntryPoint(new RestAuthenticationEntryPoint())
+                        .accessDeniedHandler(new RestAccessDeniedHandler())
+                )
                 .authorizeHttpRequests(
                         auth->auth.requestMatchers("/api/auth/**").permitAll().anyRequest().authenticated()
                 )
