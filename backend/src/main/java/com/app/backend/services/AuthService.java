@@ -5,10 +5,10 @@ import com.app.backend.entities.User;
 import com.app.backend.exceptions.BadRequestExceptionHandler;
 import com.app.backend.exceptions.UnAuthorizeExceptionHandler;
 import com.app.backend.utils.CookieUtil;
-import com.app.backend.utils.MailUtil;
 import com.app.backend.utils.TokenUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -18,10 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+    private final KafkaTemplate<String, ForgotPasswordEvent> kafkaTemplate;
     private final TokenService tokenService;
     private final UserService userService;
     private final CacheService cacheService;
-    private final MailUtil mailUtil;
     private final TokenUtil tokenUtil;
     private final CookieUtil cookieUtil;
 
@@ -43,7 +43,6 @@ public class AuthService {
         cacheService.saveToken(accessToken, user.getUsername());
         tokenService.create(user,refreshToken);
         cookieUtil.addCookie(refreshToken,response);
-        mailUtil.sendMail(user.getEmail(), "Hi "+user.getUsername(),"Your account was successfully registered");
         return authResponse(user,accessToken);
     }
 
@@ -86,12 +85,11 @@ public class AuthService {
         cookieUtil.clearCookie(response);
     }
     @Transactional
-    public String forgotPassword(ForgotPasswordRequest request){
+    public void forgotPassword(ForgotPasswordRequest request){
         User user=userService.findUser(request.getEmail());
         String token=tokenUtil.generateAccessToken(user);
-        String url="http://localhost:5173/reset-password?token="+token;
-        mailUtil.sendMail(user.getEmail(),"Reset Password",url);
-        return "Reset password link sent to email";
+        ForgotPasswordEvent event=new ForgotPasswordEvent(user.getEmail(),token);
+        kafkaTemplate.send("forgot-password-topic",event);
     }
     @Transactional
     public String resetPassword(ResetPasswordRequest request){
