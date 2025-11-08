@@ -5,10 +5,11 @@ import com.app.backend.entities.User;
 import com.app.backend.exceptions.BadRequestExceptionHandler;
 import com.app.backend.exceptions.UnAuthorizeExceptionHandler;
 import com.app.backend.utils.CookieUtil;
+import com.app.backend.utils.MailUtil;
 import com.app.backend.utils.TokenUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -18,12 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    private final KafkaTemplate<String, ForgotPasswordEvent> kafkaTemplate;
     private final TokenService tokenService;
     private final UserService userService;
     private final CacheService cacheService;
     private final TokenUtil tokenUtil;
+    private final MailUtil mailUtil;
     private final CookieUtil cookieUtil;
+    @Value("${client.url}")
+    private String clientUrl;
 
     public AuthResponse authResponse(User user,String accessToken){
         return new AuthResponse(
@@ -85,11 +88,12 @@ public class AuthService {
         cookieUtil.clearCookie(response);
     }
     @Transactional
-    public void forgotPassword(ForgotPasswordRequest request){
+    public String forgotPassword(ForgotPasswordRequest request){
         User user=userService.findUser(request.getEmail());
         String token=tokenUtil.generateAccessToken(user);
-        ForgotPasswordEvent event=new ForgotPasswordEvent(user.getEmail(),token);
-        kafkaTemplate.send("forgot-password-topic",event);
+        String url=clientUrl+"/reset-password?token="+token;
+        mailUtil.sendMail(request.getEmail(),"Reset Password",url);
+        return "Reset Password link sent to email";
     }
     @Transactional
     public String resetPassword(ResetPasswordRequest request){
