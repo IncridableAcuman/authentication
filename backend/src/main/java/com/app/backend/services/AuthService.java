@@ -34,6 +34,7 @@ public class AuthService {
                 user.getUsername(),
                 user.getEmail(),
                 user.getRole(),
+                user.isEnabled(),
                 accessToken
         );
     }

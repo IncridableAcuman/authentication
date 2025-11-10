@@ -7,6 +7,7 @@ public record AuthResponse(
         String username,
         String email,
         Role role,
+        boolean enabled,
         String accessToken
 ) {
 }
