@@ -46,11 +46,18 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
     }
+    @Transactional
     public void updateRole(Long id){
         User user=userRepository.findById(id).orElseThrow(()->new NotFoundExceptionHandler("User not found"));
         if(user.getRole().equals(Role.USER)){
             user.setRole(Role.ADMIN);
         }
+        userRepository.save(user);
+    }
+    @Transactional
+    public void ActivationAccount(Long id){
+        User user=userRepository.findById(id).orElseThrow(()->new NotFoundExceptionHandler("User not found"));
+        user.setEnabled(true);
         userRepository.save(user);
     }
 }

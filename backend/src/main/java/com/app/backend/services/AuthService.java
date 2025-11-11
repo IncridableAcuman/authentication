@@ -7,6 +7,7 @@ import com.app.backend.exceptions.UnAuthorizeExceptionHandler;
 import com.app.backend.utils.CookieUtil;
 import com.app.backend.utils.MailUtil;
 import com.app.backend.utils.TokenUtil;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,14 +41,36 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthResponse register(RegisterRequest request, HttpServletResponse response){
+    public AuthResponse register(RegisterRequest request, HttpServletResponse response) throws MessagingException {
         User user=userService.create(request);
         String accessToken=tokenUtil.generateAccessToken(user);
         String refreshToken=tokenUtil.generateRefreshToken(user);
         cacheService.saveToken(accessToken, user.getUsername());
+        String html = getString(user);
+        mailUtil.sendHTML(user.getEmail(),"Activation Account",html);
         tokenService.create(user,refreshToken);
         cookieUtil.addCookie(refreshToken,response);
         return authResponse(user,accessToken);
+    }
+
+    private static String getString(User user) {
+        String activationLink="http://localhost:8080/api/auth/activation/"+ user.getId();
+        String html = "<html>" +
+                "<body>" +
+                "<h2>Activation Account</h2>" +
+                "<p>Click here for activation account </p>" +
+                "<a href='" + activationLink + "' " +
+                "style='display:inline-block;padding:10px 20px;background-color:#2563eb;color:white;text-decoration:none;border-radius:6px;'>" +
+                "Activation account</a>" +
+                "</body>" +
+                "</html>";
+        return html;
+    }
+
+    @Transactional
+    public String activation(Long id){
+        userService.ActivationAccount(id);
+        return "Account enabled";
     }
 
     @Transactional

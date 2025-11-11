@@ -2,6 +2,7 @@ package com.app.backend.controllers;
 
 import com.app.backend.dto.*;
 import com.app.backend.services.AuthService;
+import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ public class AuthController {
     private final AuthService service;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request, HttpServletResponse response){
+    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request, HttpServletResponse response) throws MessagingException {
         return ResponseEntity.ok(service.register(request,response));
     }
     @PostMapping("/login")
@@ -48,5 +49,9 @@ public class AuthController {
     @PatchMapping("/role/{id}")
     public ResponseEntity<String> updateRole(@PathVariable Long id){
         return ResponseEntity.ok(service.updateRole(id));
+    }
+    @GetMapping("/activation/{id}")
+    public ResponseEntity<String> activationAccount(@PathVariable Long id){
+        return ResponseEntity.ok(service.activation(id));
     }
 }
