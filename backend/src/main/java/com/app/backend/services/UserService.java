@@ -41,14 +41,15 @@ public class UserService {
         if(!passwordEncoder.matches(rawPassword,encodedPassword)){
             throw new BadRequestExceptionHandler("Password does not matches!");
         }
-    }@Transactional
+    }
+    @Transactional
     public void updatePassword(String password,User user){
         user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
     }
     @Transactional
     public void updateRole(Long id){
-        User user=userRepository.findById(id).orElseThrow(()->new NotFoundExceptionHandler("User not found"));
+        User user=findUserById(id);
         if(user.getRole().equals(Role.USER)){
             user.setRole(Role.ADMIN);
         }
@@ -56,8 +57,12 @@ public class UserService {
     }
     @Transactional
     public void ActivationAccount(Long id){
-        User user=userRepository.findById(id).orElseThrow(()->new NotFoundExceptionHandler("User not found"));
+        User user=findUserById(id);
         user.setEnabled(true);
         userRepository.save(user);
+    }
+    @Transactional
+    public User findUserById(Long id){
+        return userRepository.findById(id).orElseThrow(()->new NotFoundExceptionHandler("User not found"));
     }
 }

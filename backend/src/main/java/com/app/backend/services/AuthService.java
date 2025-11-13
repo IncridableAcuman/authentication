@@ -55,7 +55,7 @@ public class AuthService {
 
     private static String getString(User user) {
         String activationLink="http://localhost:8080/api/auth/activation/"+ user.getId();
-        String html = "<html>" +
+        return "<html>" +
                 "<body>" +
                 "<h2>Activation Account</h2>" +
                 "<p>Click here for activation account </p>" +
@@ -64,7 +64,6 @@ public class AuthService {
                 "Activation account</a>" +
                 "</body>" +
                 "</html>";
-        return html;
     }
 
     @Transactional
@@ -112,11 +111,20 @@ public class AuthService {
         cookieUtil.clearCookie(response);
     }
     @Transactional
-    public String forgotPassword(ForgotPasswordRequest request){
+    public String forgotPassword(ForgotPasswordRequest request) throws MessagingException {
         User user=userService.findUser(request.getEmail());
         String token=tokenUtil.generateAccessToken(user);
         String url=clientUrl+"/reset-password?token="+token;
-        mailUtil.sendMail(request.getEmail(),"Reset Password",url);
+        String html = "<html>" +
+                "<body>" +
+                "<h2>Reset Password</h2>" +
+                "<p>Click here for update password </p>" +
+                "<a href='" + url + "' " +
+                "style='display:inline-block;padding:10px 20px;background-color:#2563eb;color:white;text-decoration:none;border-radius:6px;'>" +
+                "Reset Password</a>" +
+                "</body>" +
+                "</html>";
+        mailUtil.sendHTML(user.getEmail(),"Reset Password",html);
         return "Reset Password link sent to email";
     }
     @Transactional

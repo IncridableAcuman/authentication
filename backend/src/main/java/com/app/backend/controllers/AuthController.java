@@ -35,7 +35,7 @@ public class AuthController {
         return ResponseEntity.ok("User successfully logged out");
     }
     @PostMapping("/forgot-password")
-    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest request){
+    public ResponseEntity<String> forgotPassword(@RequestBody ForgotPasswordRequest request) throws MessagingException {
         return ResponseEntity.ok(service.forgotPassword(request));
     }
     @PutMapping("/reset-password")

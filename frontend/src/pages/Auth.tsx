@@ -1,9 +1,11 @@
 import { Eye, EyeClosed, Lock, Mail, UserRound } from "lucide-react"
 import { useState } from "react"
+import { useNavigate } from "react-router-dom";
 
 const Auth = () => {
   const [auth,setAuth]=useState(true);
   const [showPassword,setShowPassword]=useState(false);
+  const navigate = useNavigate();
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center p-6 bg-gray-200">
       <div className="bg-white w-full max-w-md rounded-md shadow-lg p-6">
@@ -35,7 +37,7 @@ const Auth = () => {
               <input type="checkbox" name="checkbox" id="checkbox" />
                Remember Me
             </div>
-            <p className="cursor-pointer hover:underline">Forgot Password</p>
+            <p className="cursor-pointer hover:underline" onClick={()=>navigate("/forgot-password")}>Forgot Password</p>
           </div>
           <button type="submit" className="bg-green-500 text-white hover:bg-green-400 transition duration-300 w-full p-3 rounded-md shadow-md cursor-pointer" >{auth ? "Sign In Now" : "Sign Up Now"}</button>
         </form>
