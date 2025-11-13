@@ -40,4 +40,4 @@ jwt:
   refreshTime: ${REFRESH_TIME}
 
 client:
-  url: ${CLIENT_URL}
+  url: http://localhost:5173

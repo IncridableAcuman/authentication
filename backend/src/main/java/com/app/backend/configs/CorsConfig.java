@@ -1,5 +1,6 @@
 package com.app.backend.configs;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -11,17 +12,20 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
-    @Bean
-    public CorsConfigurationSource configurationSource (){
-        UrlBasedCorsConfigurationSource source=new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config=new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setExposedHeaders(List.of("*"));
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
-        config.setExposedHeaders(List.of("Authorization","Set-Cookie"));
-        source.registerCorsConfiguration("/**",config);
+    @Value("${client.url}")
+    private String clientUrl;
 
+    @Bean
+    public CorsConfigurationSource configurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowCredentials(true);
+        config.setAllowedOriginPatterns(List.of(clientUrl));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "Accept", "X-Requested-With"));
+        config.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 }

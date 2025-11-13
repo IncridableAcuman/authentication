@@ -1,29 +1,64 @@
 import { Eye, EyeClosed, Lock, Mail, UserRound } from "lucide-react"
-import { useState } from "react"
+import React, { useState } from "react"
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../api";
+import toast from "react-hot-toast";
 
 const Auth = () => {
   const [auth,setAuth]=useState(true);
   const [showPassword,setShowPassword]=useState(false);
+  const [username,setUsername]=useState('');
+  const [email,setEmail]=useState('');
+  const [password,setPassword]=useState('');
   const navigate = useNavigate();
+
+
+  const handleSubmit = async (e:React.FormEvent<HTMLFormElement>) =>{
+    e.preventDefault();
+    if(auth){
+      try {
+        const {data}=await axiosInstance.post("/auth/login",{email,password});
+        localStorage.setItem("accessToken",data.accessToken);
+        toast.success("Successfully");
+        navigate("/");
+      } catch (error) {
+        toast.error("Authentication failed");
+        console.log(error);
+      }
+    } else{
+      try {
+        const {data}=await axiosInstance.post("/auth/register",{username,email,password});
+        localStorage.setItem("accessToken",data.accessToken);
+        toast.success("Successfully");
+        navigate("/");
+      } catch (error) {
+        toast.error("Registration failed");
+        console.log(error);
+      }
+    }
+  }
+
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-center p-6 bg-gray-200">
       <div className="bg-white w-full max-w-md rounded-md shadow-lg p-6">
         <h1 className="text-lg md:text-3xl font-semibold py-4 text-green-800">{auth ? "Sign In" : "Sign Up"} </h1>
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
           {!auth && (
             <div className="flex items-center gap-3 border border-gray-500 p-3 rounded-md">
               <UserRound size={20} className="text-gray-500" />
-              <input type="text" name="username" id="username" placeholder="Username" className="outline-none w-full bg-transparent" />
+              <input type="text" name="username" id="username" placeholder="Username" 
+              className="outline-none w-full bg-transparent" value={username} onChange={(e)=>setUsername(e.target.value)} required />
             </div>
           )}
           <div className="flex items-center gap-3 border border-gray-500 p-3 rounded-md">
             <Mail size={20} className="text-gray-500" />
-            <input type="email" name="email" id="email" placeholder="Email" className="outline-none w-full bg-transparent" />
+            <input type="email" name="email" id="email" placeholder="Email"
+             className="outline-none w-full bg-transparent" value={email} onChange={(e)=>setEmail(e.target.value)} required />
           </div>
           <div className="flex items-center gap-3 border border-gray-500 p-3 rounded-md">
             <Lock size={20} className="text-gray-500" />
-            <input type={showPassword ? "text" : "password"} name="password" id="password" placeholder="Password" className="outline-none w-full bg-transparent" />
+            <input type={showPassword ? "text" : "password"} name="password" id="password" placeholder="Password" 
+            className="outline-none w-full bg-transparent" value={password} onChange={(e)=>setPassword(e.target.value)} required />
             {showPassword ? (
               <Eye size={20} className="text-gray-500 cursor-pointer" onClick={()=>setShowPassword(false)} />
               
