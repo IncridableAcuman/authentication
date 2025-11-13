@@ -1,13 +1,15 @@
 import { Eye, EyeClosed, Lock } from "lucide-react";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../api";
 
 const ResetPassword = () => {
     const [password,setPassword]=useState('');
     const [confirmPassword,setConfirmPassword]=useState('');
-    const {token}=useParams();
+    const location=useLocation();
+    const queryParams=new URLSearchParams(location.search);
+    const token = queryParams.get("token");
     const [showPassword,setShowPassword]=useState(false);
     const navigate=useNavigate();
 
@@ -23,7 +25,7 @@ const ResetPassword = () => {
         const {data} = await axiosInstance.put("/auth/reset-password",{token,password});
         if(data){
           toast.success(data || "Password updated successfully");
-          navigate("/login");
+          navigate("/auth");
         }
       } catch (error) {
         console.log(error);
