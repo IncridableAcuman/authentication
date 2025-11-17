@@ -46,10 +46,8 @@ public class AuthController {
     public ResponseEntity<CurrentUser> getCurrentUser(){
         return ResponseEntity.ok(service.getCurrentUser());
     }
-    @PatchMapping("/role/{id}")
-    public ResponseEntity<String> updateRole(@PathVariable Long id){
-        return ResponseEntity.ok(service.updateRole(id));
-    }
+
+
     @GetMapping("/activation/{id}")
     public ResponseEntity<String> activationAccount(@PathVariable Long id){
         return ResponseEntity.ok(service.activation(id));

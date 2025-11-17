@@ -146,9 +146,4 @@ public class AuthService {
         User user=(User) authentication.getPrincipal();
         return new CurrentUser(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
     }
-    @Transactional
-    public String updateRole(Long id){
-        userService.updateRole(id);
-        return "User role successfully updated";
-    }
 }

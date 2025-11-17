@@ -1,6 +1,7 @@
 package com.app.backend.services;
 
 import com.app.backend.dto.RegisterRequest;
+import com.app.backend.dto.UpdateProfile;
 import com.app.backend.entities.User;
 import com.app.backend.enums.Role;
 import com.app.backend.exceptions.BadRequestExceptionHandler;
@@ -64,5 +65,16 @@ public class UserService {
     @Transactional
     public User findUserById(Long id){
         return userRepository.findById(id).orElseThrow(()->new NotFoundExceptionHandler("User not found"));
+    }
+    @Transactional
+    public void updateProfile(UpdateProfile profile){
+        User user = new User();
+        user.setFirstName(profile.getFirstName());
+        user.setLastName(profile.getLastName());
+        user.setUsername(profile.getUsername());
+        user.setEmail(profile.getEmail());
+        user.setAvatar(profile.getAvatar());
+        user.setPassword(passwordEncoder.encode(profile.getPassword()));
+        userRepository.save(user);
     }
 }
