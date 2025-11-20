@@ -31,7 +31,9 @@ public class SecurityConfig {
                         .accessDeniedHandler(new RestAccessDeniedHandler())
                 )
                 .authorizeHttpRequests(
-                        auth->auth.requestMatchers("/api/auth/**").permitAll().
+                        auth->auth
+                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/api/auth/**").permitAll().
                                 anyRequest().authenticated()
                 )
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

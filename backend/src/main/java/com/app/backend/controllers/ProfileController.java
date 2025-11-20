@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.*;
 public class ProfileController {
     private final ProfileService profileService;
 
-    @PatchMapping("/update/{id}")
-    public ResponseEntity<String> editProfile(@PathVariable Long id, @RequestBody UpdateProfile profile){
-        return ResponseEntity.ok(profileService.updateProfile(id,profile));
+    @PatchMapping("/update")
+    public ResponseEntity<String> editProfile(@RequestBody UpdateProfile profile){
+        profileService.editProfile(profile);
+        return ResponseEntity.ok("Profile updated successfully");
     }
 }

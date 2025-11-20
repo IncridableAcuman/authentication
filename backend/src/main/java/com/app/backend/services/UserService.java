@@ -67,14 +67,17 @@ public class UserService {
         return userRepository.findById(id).orElseThrow(()->new NotFoundExceptionHandler("User not found"));
     }
     @Transactional
-    public void updateProfile(UpdateProfile profile){
-        User user = new User();
+    public void updateProfile(User user,UpdateProfile profile){
+        if(profile.getUsername()!=null && !profile.getUsername().equals(user.getUsername())){
+            if (userRepository.findByUsername(profile.getUsername()).isPresent()){
+                throw new BadRequestExceptionHandler("User already exists");
+            }
+            user.setUsername(profile.getUsername());
+        }
         user.setFirstName(profile.getFirstName());
         user.setLastName(profile.getLastName());
-        user.setUsername(profile.getUsername());
         user.setEmail(profile.getEmail());
         user.setAvatar(profile.getAvatar());
-        user.setPassword(passwordEncoder.encode(profile.getPassword()));
         userRepository.save(user);
     }
 }
