@@ -13,21 +13,32 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
-
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public User findUserByEmail(String email){
-        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User not found"));
+    @Transactional(readOnly = true)
+    public User findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User not found with email: " + email));
     }
+
+    @Transactional(readOnly = true)
+    public User findUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
+    }
+
     @Transactional
-    public User create (RegisterRequest request){
+    public User create(RegisterRequest request) {
+        existUser(request.getEmail());
+
         User user = new User();
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
@@ -37,20 +48,45 @@ public class UserService {
         user.setRole(Role.USER);
         user.setEnabled(true);
         user.setAvatar("https://github.com/shadcn.png");
-        user.setCreateAt(LocalDateTime.now());
+        user.setCreateAt(OffsetDateTime.now()); // DateTimeException tuzatildi
+
         return userRepository.save(user);
     }
-    public void existUser(String email){
-        if (userRepository.findByEmail(email).isPresent()){
-            throw new BadRequestException("User already exist.");
+
+    @Transactional(readOnly = true)
+    public void existUser(String email) {
+        if (userRepository.existsByEmail(email)) { // findByEmail o'rniga existsByEmail
+            throw new BadRequestException("User already exists with email: " + email);
         }
     }
 
     @Transactional
-    public User saveUser(User user){
-        return userRepository.save(user);
+    public User changeRole(Long id, Role newRole) {
+        User user = findUserById(id);
+        user.setRole(newRole != null ? newRole : (user.getRole() == Role.USER ? Role.ADMIN : Role.USER));
+        return user; // Dirty checking avtomatik update qiladi
     }
-    public UserResponse userResponse(User user){
+
+    @Transactional
+    public void updatePassword(User user, String password) {
+        user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<UserResponse> userList() {
+        return userRepository.findAll().stream()
+                .map(this::userResponse)
+                .toList();
+    }
+
+    @Transactional
+    public void deleteUser(Long id) {
+        User user = findUserById(id);
+        userRepository.delete(user);
+    }
+
+    public UserResponse userResponse(User user) {
         return new UserResponse(
                 user.getId(),
                 user.getFirstName(),
@@ -64,40 +100,13 @@ public class UserService {
                 user.getUpdatedAt()
         );
     }
-    @Transactional
-   public User changeRole(Long id){
-        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
-        if (user.getRole().equals(Role.USER)){
-            user.setRole(Role.ADMIN);
-        } else {
-            user.setRole(Role.USER);
-        }
-        return saveUser(user);
-   }
-   public AuthResponse authResponse(User user,String accessToken){
+
+    public AuthResponse authResponse(User user, String accessToken) {
         return new AuthResponse(
                 user.getId(),
                 user.getUsername(),
                 user.getEmail(),
                 accessToken
         );
-   }
-   @Transactional
-   public void updatePassword(User user,String password){
-        user.setPassword(passwordEncoder.encode(password));
-        userRepository.save(user);
-   }
-   @Transactional
-   public List<UserResponse> userList(){
-        List<User> users = userRepository.findAll();
-        return users.stream().map(this::userResponse).toList();
-   }
-    public User findUserById(Long id){
-       return userRepository.findById(id).orElseThrow(()->new NotFoundException("User not found"));
-   }
-   @Transactional
-    public void deleteUser(Long id){
-        User user = findUserById(id);
-        userRepository.delete(user);
-   }
+    }
 }

@@ -12,22 +12,16 @@ import java.util.List;
 public class CorsConfig {
 
     @Bean
-    public CorsConfigurationSource configurationSource  (){
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
         config.setAllowedOrigins(List.of("http://localhost:5173"));
-        config.setAllowedHeaders(List.of(
-                "Authorization",
-                "X-Requested-With",
-                "Content-Type",
-                "Accept",
-                "Origin"
-        ));
+        config.setAllowedHeaders(List.of("Authorization", "X-Requested-With", "Content-Type", "Accept", "Origin"));
         config.setExposedHeaders(List.of("Authorization"));
-        config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**",config);
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 }
