@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Foydalanuvchilar Boshqaruvi</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="dashboard-container admin-container">
+    <!-- Header & Nav -->
+    <header class="navbar">
+        <div class="nav-left">
+            <h2>Admin Panel</h2>
+            <a href="/dashboard.html" class="nav-link">← Dashboadga qaytish</a>
+        </div>
+        <button id="logoutBtn" class="btn-logout">Chiqish</button>
+    </header>
+
+    <main class="admin-card">
+        <div class="admin-header">
+            <h3>Foydalanuvchilar ro'yxati</h3>
+            <span id="userCount" class="badge">0 ta foydalanuvchi</span>
+        </div>
+
+        <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+        <div id="successMessage" class="alert alert-success" style="display: none;"></div>
+
+        <div id="loading" class="spinner">Foydalanuvchilar yuklanmoqda...</div>
+
+        <!-- Foydalanuvchilar Jadvali -->
+        <div class="table-responsive" id="tableContainer" style="display: none;">
+            <table class="user-table">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Foydalanuvchi</th>
+                    <th>Email</th>
+                    <th>Roli</th>
+                    <th>Ro'yxatdan o'tgan</th>
+                    <th>Amallar</th>
+                </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                <!-- JS orqali dinamik to'ldiriladi -->
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+<script src="/js/api.js"></script>
+<script src="/js/admin.js"></script>
+</body>
+</html>

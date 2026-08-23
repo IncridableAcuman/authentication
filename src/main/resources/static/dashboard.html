@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- Header & Nav -->
+    <header class="navbar">
+        <h2>Shaxsiy Kabinet</h2>
+        <button id="logoutBtn" class="btn-logout">Chiqish</button>
+    </header>
+
+    <!-- Profil Ma'lumotlari Card -->
+    <main class="profile-card">
+        <div id="loading" class="spinner">Yuklanmoqda...</div>
+
+        <div id="profileContent" class="profile-content" style="display: none;">
+            <div class="avatar-container">
+                <img id="userAvatar" src="" alt="Avatar" class="avatar-img">
+            </div>
+
+            <div class="user-details">
+                <h3 id="userFullName">---</h3>
+                <p class="role-badge" id="userRole">---</p>
+
+                <hr>
+
+                <div class="info-group">
+                    <label>Username:</label>
+                    <span id="userName">---</span>
+                </div>
+
+                <div class="info-group">
+                    <label>Email:</label>
+                    <span id="userEmail">---</span>
+                </div>
+
+                <div class="info-group">
+                    <label>ID:</label>
+                    <span id="userId">---</span>
+                </div>
+
+                <div class="info-group">
+                    <label>Ro'yxatdan o'tilgan vaqt:</label>
+                    <span id="userCreatedAt">---</span>
+                </div>
+            </div>
+
+            <!-- Admin paneli tugmasi (faqat ADMIN roliga ega foydalanuvchilar uchun) -->
+            <div id="adminSection" style="display: none; margin-top: 20px;">
+                <a href="/admin.html" class="btn-admin">Admin Paneliga O'tish</a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- API va Dashboard skriptlari -->
+<script src="/js/api.js"></script>
+<script src="/js/dashboard.js"></script>
+</body>
+</html>
