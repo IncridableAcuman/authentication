@@ -13,11 +13,13 @@ public class CookieUtil {
 
     @Value("${jwt.refresh_time}")
     private Long refreshTime;
+    @Value("${cookie.secure}")
+    private boolean cookieSecure;
 
     public void addCookie(String refreshToken, HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
-                .secure(false) // Production (HTTPS) da true qilinadi
+                .secure(cookieSecure) // Production (HTTPS) da true qilinadi
                 .path("/")
                 .maxAge(Duration.ofMillis(refreshTime))
                 .sameSite("Lax")
@@ -29,7 +31,7 @@ public class CookieUtil {
     public void clearCookie(HttpServletResponse response) {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", "")
                 .httpOnly(true)
-                .secure(false)
+                .secure(cookieSecure)
                 .path("/")
                 .maxAge(0)
                 .sameSite("Lax")

@@ -100,6 +100,9 @@ public class UserService {
                 user.getUpdatedAt()
         );
     }
+    public User saveUser(User user){
+        return userRepository.save(user);
+    }
 
     public AuthResponse authResponse(User user, String accessToken) {
         return new AuthResponse(
